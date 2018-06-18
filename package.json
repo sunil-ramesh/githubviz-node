@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "hapi": "^17.5.1"
   },
   "devDependencies": {
