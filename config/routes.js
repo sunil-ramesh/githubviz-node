@@ -1,4 +1,5 @@
 const defaultHandler = require('../handlers/defaultHandler');
+const gitApiHander = require('../handlers/gitApiHander');
 
 const corsHeader = {
   origin: ['*'],
@@ -27,4 +28,15 @@ const defaultRoutes = [
   }
 ];
 
-module.exports = [].concat(defaultRoutes);
+const gitHubRoutes = [
+  {
+    method: 'GET',
+    path: '/reposAndCommits',
+    config: {
+      cors: corsHeader,
+      handler: gitApiHander.reposAndCommits
+    }
+  }
+];
+
+module.exports = [].concat(defaultRoutes, gitHubRoutes);
