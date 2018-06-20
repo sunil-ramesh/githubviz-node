@@ -13,6 +13,7 @@ const defaultRoutes = [
     path: '/',
     config: {
       cors: corsHeader,
+      auth: false,
       handler: (req, reply) => {
         return reply.response({message: "hello !!!!"})
       } 
@@ -34,6 +35,7 @@ const gitHubRoutes = [
     path: '/reposAndCommits',
     config: {
       cors: corsHeader,
+      auth: 'jwt',
       handler: gitApiHander.reposAndCommits
     }
   }
