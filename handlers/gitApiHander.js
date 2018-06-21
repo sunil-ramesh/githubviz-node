@@ -32,7 +32,17 @@ gitApiHander.reposAndCommits = (req, reply) => {
       'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
     },
   })
-  .then(res =>{ return reply.response({res: res.data})})
+  .then(res => {
+    filtered = [];
+    data = res.data.data.organization.repositories.nodes;
+    data.forEach(element => {
+      filtered.push({
+        x: element.name,
+        y: element.defaultBranchRef.target.history.totalCount
+      })
+    })
+    return reply.response({repoNCommits: filtered})
+  })
   .catch(error => console.error(error));  
 };
 
