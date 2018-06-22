@@ -47,6 +47,15 @@ const gitHubRoutes = [
       auth: 'jwt',
       handler: gitApiHander.usersAndPullreq
     }
+  },
+  {
+    method: 'GET',
+    path: '/teamsNMembersNPrs',
+    config:{
+      cors: corsHeader,
+      auth: 'jwt',
+      handler: gitApiHander.teamsNMembersNPrs
+    }
   }
 ];
 

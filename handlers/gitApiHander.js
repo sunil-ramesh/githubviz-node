@@ -85,4 +85,50 @@ gitApiHander.usersAndPullreq = (req, reply) => {
   });  
 }
 
+gitApiHander.teamsNMembersNPrs = (req, reply) => {
+  const query =
+  `query {
+    organization(login: "Qwinix") {
+      teams(last: 5){
+        nodes{
+          name
+          members(last: 10){
+            nodes{
+              login
+              pullRequests(last:100){
+                totalCount
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
+  axios({
+    url: 'https://api.github.com/graphql', 
+    method: 'POST',
+    data: JSON.stringify({query}),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    data = res.data.data.organization.teams.nodes;
+    // should implement async await
+    data.forEach(team => {
+      graphValues = [];
+      name = team.name;
+      team.members.nodes.forEach(member => {
+        graphValues.push({x: member.login, y: member.pullRequests.totalCount})
+      })
+      filtered.push({name, graphValues});
+    })
+    return reply.response({teamsNMembersNPrs: filtered})
+  })
+  .catch(error => {
+    return reply.response({error}).code(503)
+  });  
+}
+
 module.exports = gitApiHander;
