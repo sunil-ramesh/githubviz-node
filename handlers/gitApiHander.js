@@ -1,5 +1,6 @@
 const axios = require('axios');
 var GitHub = require('github-api');
+const _ = require('lodash');
 const gitApiHander = {};
 
 gitApiHander.reposAndCommits = (req, reply) => {
@@ -45,5 +46,41 @@ gitApiHander.reposAndCommits = (req, reply) => {
   })
   .catch(error => console.error(error));  
 };
+
+gitApiHander.usersAndPullreq = (req, reply) => {
+  const query =
+  `query {
+    organization(login: "Qwinix") {
+      members(first: 100) {
+        nodes {
+          login
+          pullRequests {
+            totalCount
+          }
+        }
+      }
+    }
+  }
+  `;
+  axios({
+    url: 'https://api.github.com/graphql', 
+    method: 'POST',
+    data: JSON.stringify({query}),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    data = res.data.data.organization.members.nodes;
+    data.forEach(member => {
+      label = member.login;
+      theta = member.pullRequests.totalCount;
+      filtered.push({label, theta})
+    })
+    return reply.response({usersAndPullreq: filtered})
+  })
+  .catch(error => console.error(error));  
+}
 
 module.exports = gitApiHander;

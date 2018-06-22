@@ -38,6 +38,15 @@ const gitHubRoutes = [
       auth: 'jwt',
       handler: gitApiHander.reposAndCommits
     }
+  },
+  {
+    method: 'GET',
+    path: '/usersAndPullreq',
+    config:{
+      cors: corsHeader,
+      auth: 'jwt',
+      handler: gitApiHander.usersAndPullreq
+    }
   }
 ];
 
