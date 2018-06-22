@@ -41,11 +41,11 @@ const gitHubRoutes = [
   },
   {
     method: 'GET',
-    path: '/teamsAndPullreq',
+    path: '/usersAndPullreq',
     config:{
       cors: corsHeader,
-      auth: false,
-      handler: gitApiHander.teamsAndPullreq
+      auth: 'jwt',
+      handler: gitApiHander.usersAndPullreq
     }
   }
 ];

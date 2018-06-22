@@ -1,5 +1,6 @@
 const axios = require('axios');
 var GitHub = require('github-api');
+const _ = require('lodash');
 const gitApiHander = {};
 
 gitApiHander.reposAndCommits = (req, reply) => {
@@ -46,32 +47,21 @@ gitApiHander.reposAndCommits = (req, reply) => {
   .catch(error => console.error(error));  
 };
 
-gitApiHander.teamsAndPullreq = (req, reply) => {
+gitApiHander.usersAndPullreq = (req, reply) => {
   const query =
   `query {
     organization(login: "Qwinix") {
-      teams(first: 100, after: null) {
-        edges {
-          cursor
-          node {
-            name
-            members(first:100){
-              totalCount
-              nodes{
-                name
-                pullRequests{
-                  totalCount
-                }
-              }
-            }
+      members(first: 100) {
+        nodes {
+          login
+          pullRequests {
+            totalCount
           }
-        }
-        pageInfo {
-          hasNextPage
         }
       }
     }
-  }`;
+  }
+  `;
   axios({
     url: 'https://api.github.com/graphql', 
     method: 'POST',
@@ -82,24 +72,13 @@ gitApiHander.teamsAndPullreq = (req, reply) => {
   })
   .then(res => {
     filtered = [];
-    data = res.data.data.organization.teams.edges;
-    data.forEach(team => {
-      label = team.node.name;
-      console.log(team.node.members.nodes)
-      if (team.node.members.nodes){
-        theta = team.node.members.nodes.reduce((v1, v2) => {
-          if (v1 && v2 && v1.pullRequests && v2.pullRequests) {
-            return (v1.pullRequests.totalCount + v2.pullRequests.totalCount)
-          } else {
-            return 0
-          }
-        },0);
-        // theta = team.node.members.nodes.reduce((v1, v2) => console.log(v1));
-        filtered.push({label, theta});
-      }
+    data = res.data.data.organization.members.nodes;
+    data.forEach(member => {
+      label = member.login;
+      theta = member.pullRequests.totalCount;
+      filtered.push({label, theta})
     })
-    return reply.response({teamsAndPullreq: filtered})
-    // return reply.response({teamsAndPullreq: data})
+    return reply.response({usersAndPullreq: filtered})
   })
   .catch(error => console.error(error));  
 }
