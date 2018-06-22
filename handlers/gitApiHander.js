@@ -80,7 +80,9 @@ gitApiHander.usersAndPullreq = (req, reply) => {
     })
     return reply.response({usersAndPullreq: filtered})
   })
-  .catch(error => console.error(error));  
+  .catch(error => {
+    return reply.response({error}).code(503)
+  });  
 }
 
 module.exports = gitApiHander;
