@@ -130,5 +130,43 @@ gitApiHander.teamsNMembersNPrs = (req, reply) => {
     return reply.response({error}).code(503)
   });  
 }
+gitApiHander.singleUserNCommits = (req, reply) => {
+  const user_name = req.params.userName;
+  const query = `
+  query {
+    user(login: "${user_name}"){
+      pullRequests(last: 100){
+        nodes{
+          number
+          commits{
+            totalCount
+          }
+        }
+      }
+    }
+  }`;
+  axios({
+    url: 'https://api.github.com/graphql', 
+    method: 'POST',
+    data: JSON.stringify({query}),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    console.log(res.data)
+    filtered = [];
+    data = res.data.data.user.pullRequests.nodes;
+    data.forEach(pullRequests => {
+      label = pullRequests.login;
+      theta = pullRequests.commits.totalCount;
+      filtered.push({label, theta})
+    })
+    return reply.response({singleUserNCommits: res.data})
+  })
+  .catch(error => {
+    return reply.response({error}).code(503)
+  });  
+}
 
 module.exports = gitApiHander;
