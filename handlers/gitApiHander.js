@@ -130,5 +130,45 @@ gitApiHander.teamsNMembersNPrs = (req, reply) => {
     return reply.response({error}).code(503)
   });  
 }
+gitApiHander.singleRepoNCommits = (req, reply) => {
+  const repo_name = req.params.repoName
+  const query =`
+       query {
+          repository(owner: "Qwinix", name: "${repo_name}") {
+            refs(first: 100, refPrefix: "refs/heads/") {
+              nodes {
+                name
+                  target {
+                   ...on Commit {
+                       history {
+                          totalCount
+                               }
+                              }
+                           }
+                       }
+                    }
+                 }
+               }`;
+  axios({
+    url: 'https://api.github.com/graphql', 
+    method: 'POST',
+    data: JSON.stringify({query}),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    data = res.data.data.repository.refs.nodes;
+    data.forEach(element => {
+      filtered.push({
+        x: element.name,
+        y: element.target.history.totalCount
+      })
+    })
+    return reply.response({singleRepoNCommits: filtered})
+  })
+  .catch(error => console.error(error));  
+};
 
 module.exports = gitApiHander;

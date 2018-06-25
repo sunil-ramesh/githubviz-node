@@ -56,6 +56,15 @@ const gitHubRoutes = [
       auth: 'jwt',
       handler: gitApiHander.teamsNMembersNPrs
     }
+  },
+  {
+    method: 'GET',
+    path: '/singleRepoNCommits/{repoName}',
+    config:{
+      cors: corsHeader,
+      auth: false,
+      handler: gitApiHander.singleRepoNCommits
+    }
   }
 ];
 
