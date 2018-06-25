@@ -130,6 +130,7 @@ gitApiHander.teamsNMembersNPrs = (req, reply) => {
     return reply.response({error}).code(503)
   });  
 }
+
 gitApiHander.singleUserNCommits = (req, reply) => {
   const user_name = req.params.userName;
   const query = `
@@ -146,6 +147,48 @@ gitApiHander.singleUserNCommits = (req, reply) => {
     }
   }`;
   axios({
+    url: 'https://api.github.com/graphql',
+    method: 'POST',
+    data: JSON.stringify({ query }),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    data = res.data.data.user.pullRequests.nodes;
+    data.forEach(pullRequests => {
+      label = pullRequests.number;
+      theta = pullRequests.commits.totalCount;
+      filtered.push({ label, theta })
+    })
+    return reply.response({ singleUserNCommits: filtered })
+  })
+  .catch(error => {
+    return reply.response({ error }).code(503)
+  });
+}
+
+gitApiHander.singleRepoNCommits = (req, reply) => {
+  const repo_name = req.params.repoName;
+  const query = `
+    query {
+          repository(owner: "Qwinix", name: "${repo_name}") {
+            refs(first: 100, refPrefix: "refs/heads/") {
+              nodes {
+                name
+                  target {
+                   ...on Commit {
+                       history {
+                          totalCount
+                               }
+                              }
+                           }
+                       }
+                    }
+                 }
+                }`;
+  axios({
     url: 'https://api.github.com/graphql', 
     method: 'POST',
     data: JSON.stringify({query}),
@@ -154,19 +197,19 @@ gitApiHander.singleUserNCommits = (req, reply) => {
     },
   })
   .then(res => {
-    console.log(res.data)
     filtered = [];
-    data = res.data.data.user.pullRequests.nodes;
-    data.forEach(pullRequests => {
-      label = pullRequests.login;
-      theta = pullRequests.commits.totalCount;
-      filtered.push({label, theta})
+    data = res.data.data.repository.refs.nodes;
+    data.forEach(element => {
+      filtered.push({
+        x: element.name,
+        y: element.target.history.totalCount
+      })
     })
-    return reply.response({singleUserNCommits: res.data})
+    return reply.response({singleRepoNCommits: filtered})
   })
   .catch(error => {
     return reply.response({error}).code(503)
-  });  
+  }); 
 }
 
 module.exports = gitApiHander;

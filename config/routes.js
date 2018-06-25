@@ -60,12 +60,22 @@ const gitHubRoutes = [
   {
     method: 'GET',
     path: '/singleUserNCommits/{userName}',
-    config:{
+    config: {
       cors: corsHeader,
       auth: false,
       handler: gitApiHander.singleUserNCommits
     }
+  },
+  {
+    method: 'GET',
+    path: '/singleRepoNCommits/{repoName}',
+    config: {
+      cors: corsHeader,
+      auth: false,
+      handler: gitApiHander.singleRepoNCommits
+    }
   }
+
 ];
 
 module.exports = [].concat(defaultRoutes, gitHubRoutes);
