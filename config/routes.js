@@ -74,6 +74,15 @@ const gitHubRoutes = [
       auth: false,
       handler: gitApiHander.singleRepoNCommits
     }
+  },
+  {
+    method: 'GET',
+    path: '/teamAdditionsDeletions/{teamName}',
+    config:{
+      cors: corsHeader,
+      auth: false,
+      handler: gitApiHander.teamAdditionsDeletions
+    }
   }
 
 ];

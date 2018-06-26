@@ -173,21 +173,21 @@ gitApiHander.singleRepoNCommits = (req, reply) => {
   const repo_name = req.params.repoName;
   const query = `
     query {
-          repository(owner: "Qwinix", name: "${repo_name}") {
-            refs(first: 100, refPrefix: "refs/heads/") {
-              nodes {
-                name
-                  target {
-                   ...on Commit {
-                       history {
-                          totalCount
-                               }
-                              }
-                           }
-                       }
-                    }
-                 }
-                }`;
+      repository(owner: "Qwinix", name: "${repo_name}") {
+        refs(first: 100, refPrefix: "refs/heads/") {
+          nodes {
+            name
+            target {
+              ...on Commit {
+                history {
+                  totalCount
+                }
+              }
+            }
+          }
+        }
+      }
+    }`;
   axios({
     url: 'https://api.github.com/graphql', 
     method: 'POST',
@@ -210,6 +210,55 @@ gitApiHander.singleRepoNCommits = (req, reply) => {
   .catch(error => {
     return reply.response({error}).code(503)
   }); 
+}
+
+gitApiHander.teamAdditionsDeletions = (req, reply) => {
+  const team_name = req.params.teamName;
+  const query =
+  `query {
+    organization(login: "Qwinix") {
+      team(slug: "${team_name}") {
+        members(first: 10) {
+          nodes {
+            login
+            pullRequests(last: 10) {
+              nodes {
+                additions
+                deletions
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
+  axios({
+    url: 'https://api.github.com/graphql', 
+    method: 'POST',
+    data: JSON.stringify({query}),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    additionsArray = [];
+    deletionsArray = [];
+    data = res.data.data.organization.team.members.nodes;
+    // should implement async await
+    data.forEach(member => {
+      name = member.login;
+      var additions = _.sumBy(member.pullRequests.nodes, (pr)=>{return pr.additions });
+      var deletions = _.sumBy(member.pullRequests.nodes, (pr)=>{return pr.deletions });
+      additionsArray.push({x: name, y: additions});
+      deletionsArray.push({x: name, y: deletions});
+    })
+    filtered = { additions: additionsArray, deletions: deletionsArray }
+    return reply.response({teamAdditionsDeletions: filtered})
+  })
+  .catch(error => {
+    return reply.response({error}).code(503)
+  });  
 }
 
 module.exports = gitApiHander;
