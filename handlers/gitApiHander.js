@@ -89,13 +89,13 @@ gitApiHander.teamsNMembersNPrs = (req, reply) => {
   const query =
   `query {
     organization(login: "Qwinix") {
-      teams(last: 5){
+      teams(first: 5){
         nodes{
-          name
+          slug
           members(last: 10){
             nodes{
               login
-              pullRequests(last:100){
+              pullRequests(){
                 totalCount
               }
             }
@@ -118,7 +118,7 @@ gitApiHander.teamsNMembersNPrs = (req, reply) => {
     // should implement async await
     data.forEach(team => {
       graphValues = [];
-      name = team.name;
+      name = team.slug;
       team.members.nodes.forEach(member => {
         graphValues.push({x: member.login, y: member.pullRequests.totalCount})
       })
@@ -218,7 +218,7 @@ gitApiHander.teamAdditionsDeletions = (req, reply) => {
   `query {
     organization(login: "Qwinix") {
       team(slug: "${team_name}") {
-        members(first: 10) {
+        members(last: 10) {
           nodes {
             login
             pullRequests(last: 10) {
@@ -250,8 +250,8 @@ gitApiHander.teamAdditionsDeletions = (req, reply) => {
       name = member.login;
       var additions = _.sumBy(member.pullRequests.nodes, (pr)=>{return pr.additions });
       var deletions = _.sumBy(member.pullRequests.nodes, (pr)=>{return pr.deletions });
-      additionsArray.push({x: name, y: additions});
-      deletionsArray.push({x: name, y: deletions});
+      additionsArray.push({x: name, y: additions, type: 'Additions'});
+      deletionsArray.push({x: name, y: deletions, type: 'Deletions'});
     })
     filtered = { additions: additionsArray, deletions: deletionsArray }
     return reply.response({teamAdditionsDeletions: filtered})
