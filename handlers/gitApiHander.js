@@ -4,10 +4,11 @@ const _ = require('lodash');
 const gitApiHander = {};
 
 gitApiHander.reposAndCommits = (req, reply) => {
+  const repoCount = req.query.repoCount || 100;
   const query = `
   query {
     organization(login: "Qwinix") {
-    repositories(first:100) {
+    repositories(first:${repoCount}) {
         nodes{
           ... on Repository{
             name
@@ -48,10 +49,11 @@ gitApiHander.reposAndCommits = (req, reply) => {
 };
 
 gitApiHander.usersAndPullreq = (req, reply) => {
+  const usersCount = req.query.usersCount || 100;
   const query =
   `query {
     organization(login: "Qwinix") {
-      members(first: 100) {
+      members(first: ${usersCount}) {
         nodes {
           login
           pullRequests {
