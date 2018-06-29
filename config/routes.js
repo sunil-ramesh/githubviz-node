@@ -83,8 +83,16 @@ const gitHubRoutes = [
       auth: 'jwt',
       handler: gitApiHander.teamAdditionsDeletions
     }
+  },
+  {
+    method: 'GET',
+    path: '/singlePullreqNcommits/{repoName}/{pullreqnumber}',
+    config: {
+      cors: corsHeader,
+      auth: false,
+      handler: gitApiHander.singlePullreqNcommits
+    }
   }
-
 ];
 
 module.exports = [].concat(defaultRoutes, gitHubRoutes);

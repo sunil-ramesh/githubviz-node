@@ -263,4 +263,54 @@ gitApiHander.teamAdditionsDeletions = (req, reply) => {
   });  
 }
 
+gitApiHander.singlePullreqNcommits = (req, reply) => {
+  const repo_name = req.params.repoName;
+  const pulreq_number=req.params.pullreqnumber;
+  const query = `
+  query {
+    repository(owner: "Qwinix", name: "${repo_name}") {
+      pullRequest(number: ${pulreq_number}) {
+        commits(first: 10) {
+          edges {
+            node {
+              commit {
+                oid
+                message
+                author{
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  `;
+  axios({
+    url: 'https://api.github.com/graphql',
+    method: 'POST',
+    data: JSON.stringify({ query }),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    console.log(res.data.data.repository)
+    data = res.data.data.repository.pullRequest.commits.edges;
+    // console.log(res.data.data.user.pullRequests.commits.edges);
+    data.forEach(element => {
+      oid = element.node.commit.oid;
+      message = element.node.commit.message;
+      author = element.node.commit.author.name;
+      filtered.push({ oid, message, author })
+    })
+    return reply.response({ singlePullreqNcommits: filtered})
+  })
+  .catch(error => {
+    return reply.response({ error }).code(503)
+  });
+}
+
 module.exports = gitApiHander;
