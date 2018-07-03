@@ -62,7 +62,7 @@ const gitHubRoutes = [
     path: '/singleUserNCommits/{userName}',
     config: {
       cors: corsHeader,
-      auth: false,
+      auth: 'jwt',
       handler: gitApiHander.singleUserNCommits
     }
   },
@@ -71,7 +71,7 @@ const gitHubRoutes = [
     path: '/singleRepoNCommits/{repoName}',
     config: {
       cors: corsHeader,
-      auth: false,
+      auth: 'jwt',
       handler: gitApiHander.singleRepoNCommits
     }
   },
@@ -80,7 +80,7 @@ const gitHubRoutes = [
     path: '/teamAdditionsDeletions/{teamName}',
     config:{
       cors: corsHeader,
-      auth: false,
+      auth: 'jwt',
       handler: gitApiHander.teamAdditionsDeletions
     }
   },
@@ -89,7 +89,7 @@ const gitHubRoutes = [
     path: '/committedDateNMessage/{repoName}/{branchName}',
     config:{
       cors: corsHeader,
-      auth: false,
+      auth: 'jwt',
       handler: gitApiHander.committedDateNMessage
     }
   }
