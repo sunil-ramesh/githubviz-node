@@ -251,7 +251,6 @@ gitApiHander.teamAdditionsDeletions = (req, reply) => {
     additionsArray = [];
     deletionsArray = [];
     data = res.data.data.organization.team.members.nodes;
-    // should implement async await
     data.forEach(member => {
       name = member.login;
       var additions = _.sumBy(member.pullRequests.nodes, (pr)=>{return pr.additions });
@@ -301,9 +300,7 @@ gitApiHander.singlePullreqNcommits = (req, reply) => {
   })
   .then(res => {
     filtered = [];
-    console.log(res.data.data.repository)
     data = res.data.data.repository.pullRequest.commits.edges;
-    // console.log(res.data.data.user.pullRequests.commits.edges);
     data.forEach(element => {
       oid = element.node.commit.oid;
       message = element.node.commit.message;
