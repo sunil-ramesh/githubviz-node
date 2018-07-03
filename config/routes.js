@@ -83,6 +83,15 @@ const gitHubRoutes = [
       auth: 'jwt',
       handler: gitApiHander.teamAdditionsDeletions
     }
+  },
+  {
+    method: 'GET',
+    path: '/committedDateNMessage/{repoName}/{branchName}',
+    config:{
+      cors: corsHeader,
+      auth: false,
+      handler: gitApiHander.committedDateNMessage
+    }
   }
 
 ];

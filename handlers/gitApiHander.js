@@ -263,4 +263,56 @@ gitApiHander.teamAdditionsDeletions = (req, reply) => {
   });  
 }
 
+gitApiHander.committedDateNMessage = (req, reply) => {
+  const repo_name = req.params.repoName;
+  const branch_name = req.params.branchName;
+  const query = `
+  query { 
+    repository(name: "${repo_name}", owner: "Qwinix") {
+      ref(qualifiedName: "${branch_name}") {
+        target {
+          ... on Commit {
+            history(first: 10) {
+              edges {
+                node {
+                  committedDate
+                  message
+                  oid
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
+  axios({
+    url: 'https://api.github.com/graphql', 
+    method: 'POST',
+    data: JSON.stringify({query}),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    data = res.data.data.repository.ref.target.history.edges;
+    // console.log(res.data.data.repository.ref.target.history.edges)
+    data.forEach(element => {
+      filtered.push({
+        committedDate: element.node.committedDate,
+        message: element.node.message,
+        id: element.node.oid
+      })
+    })
+    return reply.response({committedDateNMessage: filtered})
+  })
+  .catch(error => {
+    return reply.response({error}).code(503)
+  }); 
+}
+
+  
+
+
 module.exports = gitApiHander;
