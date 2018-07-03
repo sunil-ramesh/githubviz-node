@@ -140,6 +140,9 @@ gitApiHander.singleUserNCommits = (req, reply) => {
     user(login: "${user_name}"){
       pullRequests(last: 100){
         nodes{
+          repository{
+            name
+          }
           number
           commits{
             totalCount
@@ -161,8 +164,9 @@ gitApiHander.singleUserNCommits = (req, reply) => {
     data = res.data.data.user.pullRequests.nodes;
     data.forEach(pullRequests => {
       label = pullRequests.number;
+      repo = pullRequests.repository.name;
       theta = pullRequests.commits.totalCount;
-      filtered.push({ label, theta })
+      filtered.push({ label, theta, repo })
     })
     return reply.response({ singleUserNCommits: filtered })
   })
@@ -247,7 +251,6 @@ gitApiHander.teamAdditionsDeletions = (req, reply) => {
     additionsArray = [];
     deletionsArray = [];
     data = res.data.data.organization.team.members.nodes;
-    // should implement async await
     data.forEach(member => {
       name = member.login;
       var additions = _.sumBy(member.pullRequests.nodes, (pr)=>{return pr.additions });
@@ -262,7 +265,6 @@ gitApiHander.teamAdditionsDeletions = (req, reply) => {
     return reply.response({error}).code(503)
   });  
 }
-
 gitApiHander.committedDateNMessage = (req, reply) => {
   const repo_name = req.params.repoName;
   const branch_name = req.params.branchName;
@@ -311,8 +313,51 @@ gitApiHander.committedDateNMessage = (req, reply) => {
     return reply.response({error}).code(503)
   }); 
 }
-
-  
-
-
+gitApiHander.singlePullreqNcommits = (req, reply) => {
+  const repo_name = req.params.repoName;
+  const pulreq_number=req.params.pullreqnumber;
+  const query = `
+  query {
+    repository(owner: "Qwinix", name: "${repo_name}") {
+      pullRequest(number: ${pulreq_number}) {
+        commits(first: 10) {
+          edges {
+            node {
+              commit {
+                oid
+                message
+                author{
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  `;
+  axios({
+    url: 'https://api.github.com/graphql',
+    method: 'POST',
+    data: JSON.stringify({ query }),
+    headers: {
+      'Authorization': `Bearer ${process.env.GIT_ACCESS_TOKEN}`,
+    },
+  })
+  .then(res => {
+    filtered = [];
+    data = res.data.data.repository.pullRequest.commits.edges;
+    data.forEach(element => {
+      oid = element.node.commit.oid;
+      message = element.node.commit.message;
+      author = element.node.commit.author.name;
+      filtered.push({ oid, message, author })
+    })
+    return reply.response({ singlePullreqNcommits: filtered})
+  })
+  .catch(error => {
+    return reply.response({ error }).code(503)
+  });
+}
 module.exports = gitApiHander;

@@ -86,14 +86,23 @@ const gitHubRoutes = [
   },
   {
     method: 'GET',
+    path: '/singlePullreqNcommits/{repoName}/{pullreqnumber}',
+    config: {
+      cors: corsHeader,
+      auth: 'jwt',
+      handler: gitApiHander.singlePullreqNcommits
+    }
+  },
+
+{
+  method: 'GET',
     path: '/committedDateNMessage/{repoName}/{branchName}',
     config:{
       cors: corsHeader,
-      auth: false,
+      auth: 'jwt',
       handler: gitApiHander.committedDateNMessage
     }
   }
-
 ];
 
 module.exports = [].concat(defaultRoutes, gitHubRoutes);
