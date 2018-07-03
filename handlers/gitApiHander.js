@@ -140,6 +140,9 @@ gitApiHander.singleUserNCommits = (req, reply) => {
     user(login: "${user_name}"){
       pullRequests(last: 100){
         nodes{
+          repository{
+            name
+          }
           number
           commits{
             totalCount
@@ -161,8 +164,9 @@ gitApiHander.singleUserNCommits = (req, reply) => {
     data = res.data.data.user.pullRequests.nodes;
     data.forEach(pullRequests => {
       label = pullRequests.number;
+      repo = pullRequests.repository.name;
       theta = pullRequests.commits.totalCount;
-      filtered.push({ label, theta })
+      filtered.push({ label, theta, repo })
     })
     return reply.response({ singleUserNCommits: filtered })
   })
