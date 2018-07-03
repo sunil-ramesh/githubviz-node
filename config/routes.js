@@ -89,7 +89,7 @@ const gitHubRoutes = [
     path: '/singlePullreqNcommits/{repoName}/{pullreqnumber}',
     config: {
       cors: corsHeader,
-      auth: false,
+      auth: 'jwt',
       handler: gitApiHander.singlePullreqNcommits
     }
   },
@@ -99,7 +99,7 @@ const gitHubRoutes = [
     path: '/committedDateNMessage/{repoName}/{branchName}',
     config:{
       cors: corsHeader,
-      auth: false,
+      auth: 'jwt',
       handler: gitApiHander.committedDateNMessage
     }
   }
