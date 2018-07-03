@@ -92,6 +92,16 @@ const gitHubRoutes = [
       auth: false,
       handler: gitApiHander.singlePullreqNcommits
     }
+  },
+
+{
+  method: 'GET',
+    path: '/committedDateNMessage/{repoName}/{branchName}',
+    config:{
+      cors: corsHeader,
+      auth: false,
+      handler: gitApiHander.committedDateNMessage
+    }
   }
 ];
 
