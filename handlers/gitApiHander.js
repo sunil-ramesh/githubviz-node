@@ -138,7 +138,7 @@ gitApiHander.singleUserNCommits = (req, reply) => {
   const query = `
   query {
     user(login: "${user_name}"){
-      pullRequests(last: 100){
+      pullRequests(last: 20){
         nodes{
           repository{
             name
