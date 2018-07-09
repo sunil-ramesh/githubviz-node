@@ -20,6 +20,15 @@ const defaultRoutes = [
     }
   },
   {
+    method: 'GET',
+    path: '/imdbSachMoviesByYear',
+    config: {
+      cors: corsHeader,
+      auth: false,
+      handler: defaultHandler.imdbSachMoviesByYear
+    }
+  },
+  {
     method: 'POST',
     path: '/auth/github',
     config: {

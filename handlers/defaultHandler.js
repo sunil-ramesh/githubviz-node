@@ -1,4 +1,8 @@
 const axios = require('axios');
+var csv = require("fast-csv");
+var fs = require('fs');
+var path = require('path');
+
 const defaultHandler = {}
 
 defaultHandler.gitLogin = (req, reply) => {
@@ -17,6 +21,24 @@ defaultHandler.gitLogin = (req, reply) => {
   })
   .catch(error => {
     return reply.response({message: "something went wrong"}).code(503);
+  });
+}
+
+defaultHandler.imdbSachMoviesByYear = (req, reply) => {
+  var filtered;
+  var csvData = {};
+  var stream = fs.createReadStream(path.join(__dirname, '../', 'data/ratingsSach.csv'));
+  csv
+  .fromStream(stream, {headers : true})
+  .on("data", (data) => {
+    var year = data['Year'];
+    csvData[year] = (csvData[year]+1) || 1;
+  })
+  .on("end", () => {
+    csvData = Object.keys(csvData).map((key) => {
+      return {x: key, y: csvData[key]}
+    });
+    return reply.response({imdbSachMoviesByYear: csvData})
   });
 }
 
