@@ -9,12 +9,6 @@ node {
         app = docker.build("gitviz-node")
     }
 
-    stage('Docker push') {
-    	sh 'ecs-cli configure --cluster gitviz-test --region us-east-1 --default-launch-type EC2 --config-name gitviz-test'
-    	sh 'ecs-cli configure profile --access-key AKIAJEP4WYKNHY6WLPKQ --secret-key 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 --profile-name gitviz-test'
-
-    }
-
 }
 
 
