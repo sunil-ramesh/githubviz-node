@@ -1,3 +1,8 @@
+#!groovy
+
+#variable 
+def dockerImage
+
 pipeline {
     agent any
     stages {
@@ -11,7 +16,7 @@ pipeline {
         stage('Build image') {
             steps {
             script {
-                docker.build("gitviz-node")
+               dockerImage = docker.build("gitviz-node")
                 }
              }
          }
