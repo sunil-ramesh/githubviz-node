@@ -21,9 +21,7 @@ pipeline {
          }
          stage('Test') {
             steps {
-                script {
-                    sh 'test case running ....'
-                    }
+                echo "test case running ..."
                 }
             }
 
@@ -32,8 +30,19 @@ pipeline {
                 branch 'staging' 
             }
             steps {
-                sh 'deploying...'
+                echo "deploying to staging .."
             }
         }
    }
+   post {
+        failure {    // notify users when the Pipeline fails
+            
+        }
+        success {    // notify users when the Pipeline success
+            
+        }
+        unstable {    // notify users when the Pipeline unstable
+            
+        }
+    }
 }
