@@ -1,14 +1,26 @@
-node {
-    def app
-
-    stage('SCM Checkout') {
-        git credentialsId: '8e74bd8b-049f-4320-b077-2df0e12373a0', url: 'https://github.com/sunil-ramesh/githubviz-node.git'
+pipeline {
+    agent any
+    stages {
+        stage('Build image') {
+            steps {
+                docker.build("gitviz-node")
+            }
+        }
+        stage('Deliver for production') {
+            when {
+                branch 'master' 
+            }
+            steps {
+                sh 'echo "deploying...'
+            }
+        }
+        }
     }
-
-    stage('Build image') {
-        app = docker.build("gitviz-node")
+    post { 
+        always { 
+            echo 'I will always say Hello again!'
+        }
     }
-
 }
 
 
