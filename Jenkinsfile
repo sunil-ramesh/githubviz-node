@@ -25,10 +25,13 @@ pipeline {
                 }
             }
 
+         stage('docker push') {
+            steps {
+                echo "push docker image"
+                }
+            }   
+
         stage('Deliver for production') {
-            when {
-                branch 'staging' 
-            }
             steps {
                 echo "deploying to staging .."
             }
