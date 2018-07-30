@@ -32,7 +32,7 @@ pipeline {
                 branch 'staging' 
             }
             steps {
-                sh 'echo "deploying..."'
+                sh 'deploying...'
             }
         }
    }
