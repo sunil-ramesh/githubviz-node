@@ -1,6 +1,5 @@
 #!groovy
 
-#variable 
 def dockerImage
 
 pipeline {
