@@ -35,14 +35,16 @@ pipeline {
         }
    }
    post {
-        failure {    // notify users when the Pipeline fails
-            
+        success {
+            echo "success notification"
         }
-        success {    // notify users when the Pipeline success
-            
+        failure {
+            echo "failure notification"
         }
-        unstable {    // notify users when the Pipeline unstable
-            
+        unstable {
+            echo "build is unstable"
+        }
+        always {
         }
     }
 }
