@@ -26,7 +26,6 @@ pipeline {
                     }
                 }
             }
-        }
 
         stage('Deliver for production') {
             when {
