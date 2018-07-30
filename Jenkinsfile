@@ -44,7 +44,5 @@ pipeline {
         unstable {
             echo "build is unstable"
         }
-        always {
-        }
     }
 }
